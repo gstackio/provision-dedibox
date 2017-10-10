@@ -1,0 +1,58 @@
+---
+
+- name: Go language | golang {{ golang_version }} is downloaded
+  get_url:
+    url: https://storage.googleapis.com/golang/go{{ golang_version }}.linux-amd64.tar.gz
+    checksum: sha256:{{ golang_archive_sha256 }}
+    dest: "{{ resources_dir }}/go{{ golang_version }}.linux-amd64.tar.gz"
+    mode: 0644
+
+- name: Go language | go archive is extracted
+  unarchive:
+    copy: no
+    # remote_src: yes # will replace 'copy: no' as of Ansible 2.2
+    src: "{{ resources_dir }}/go{{ golang_version }}.linux-amd64.tar.gz"
+    dest: "{{ prefix_dir }}"
+
+# WORKAROUND: as the 'extra_opts: [ "--strip-components=1" ]' is not supported
+# above by the 'unarchive' module, we have to implement a renaming below with
+# the 3 following tasks.
+
+- name: Go language | source 'go' dir is stat-ed
+  stat:
+    path: "{{ prefix_dir }}/go"
+  register: godir_stat
+
+- name: Go language | target 'goroot' is deleted
+  when: godir_stat.stat.exists
+  file:
+    path: "{{ prefix_dir }}/goroot"
+    state: absent
+
+- name: Go language | 'go' dir is renamed 'goroot'
+  when: godir_stat.stat.exists
+  command: mv "{{ prefix_dir }}/go" "{{ prefix_dir }}/goroot"
+
+
+
+# We ensure main directories are created, and we do it at last because earlier
+# processing might involve deleting them.
+
+- name: Go language | go dirs are created
+  file:
+    dest: "{{ prefix_dir }}/{{ item }}"
+    state: directory
+  with_items:
+    - goroot
+    - gopath
+
+- name: Go language | bash config is set up
+  blockinfile:
+    dest: "{{ ansible_env.HOME }}/.bashrc"
+    insertafter: EOF
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - golang"
+    block: |
+      export GOROOT={{ prefix_dir }}/goroot
+      export GOPATH={{ prefix_dir }}/gopath
+      export PATH=$GOROOT/bin:$GOPATH/bin:$PATH
+    state: present

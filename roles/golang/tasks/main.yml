@@ -1,0 +1,6 @@
+---
+
+- include: golang.yml
+  become: yes
+  tags: [ golang ]
+
