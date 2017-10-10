@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+PREFIX_DIR=${PREFIX_DIR:-$HOME/local}
+DATA_DIR=${DATA_DIR:-$PREFIX_DIR/var/lib/traefik}
+CONF_DIR=${CONF_DIR:-$PREFIX_DIR/etc/traefik}
+
+function extract_b64_value() {
+    local cert_name=$1
+    local sub_filter=$2
+
+    local jq_list_certs=".DomainsCertificate.Certs"
+    local jq_matching_main=".Domains.Main == \"$cert_name\""
+    local jq_matching_san=".Domains.SANs != null and ( .Domains.SANs | contains([ \"$cert_name\" ]) )"
+    local jq_retain_last_elem_or_return_empty_string="if length > 0 then .[length-1] else \"\" end"
+
+    local jq_cert_filter=$jq_list_certs
+    jq_cert_filter+=" | map(select( ($jq_matching_main) or ($jq_matching_san) ))"
+    jq_cert_filter+=" | $jq_retain_last_elem_or_return_empty_string"
+
+    jq "$jq_cert_filter" "$DATA_DIR/acme.json" \
+	    | jq -r "$sub_filter" \
+            | base64 -d
+}
+
+extract_cert() {
+    local dn=$1
+    local out_file=$2
+
+    extract_b64_value "$dn" .Certificate.Certificate \
+        > "$out_file"
+    chmod 444 "$out_file"
+}
+
+extract_key() {
+    local dn=$1
+    local out_file=$2
+
+    extract_b64_value "$dn" .Certificate.PrivateKey \
+        > "$out_file"
+    chmod 400 "$out_file"
+}
+
+extract_cert traefik.gstack.io $CONF_DIR/traefik.gstack.io.crt
+extract_key  traefik.gstack.io $CONF_DIR/traefik.gstack.io.key
+
+extract_cert doppler.gstack.me $CONF_DIR/doppler.gstack.me.crt
+extract_key  doppler.gstack.me $CONF_DIR/doppler.gstack.me.key

@@ -1,0 +1,42 @@
+---
+
+- name: Traefik | config and data directories are created, with restricted permissions
+  file:
+    path: "{{ prefix_dir }}/{{ item }}"
+    state: directory
+    mode: 0700
+  with_items:
+    - etc/traefik
+    - var/lib/traefik
+
+
+
+- name: Traefik | config files are rendered
+  template:
+    src: "{{ item }}"
+    dest: "{{ prefix_dir }}/etc/traefik/"
+  with_items:
+    - traefik.toml
+    - rules.toml
+  register: traefik_server_conf
+
+- name: Traefik | default certificates files are copied
+  copy:
+    src: "roles/traefik/files/{{ item }}"
+    dest: "{{ prefix_dir }}/etc/traefik/"
+    mode: 0600
+  with_items:
+    - traefik.gstack.io.crt
+    - traefik.gstack.io.key
+  register: traefik_default_certs
+
+- name: Traefik | initial certificates databases are copied (if non-existing)
+  copy:
+    src: "roles/traefik/files/{{ item }}"
+    dest: "{{ prefix_dir }}/var/lib/traefik/"
+    mode: 0600
+    force: "{{ traefik_acme_overwrite_certs_dbs }}"
+  with_items:
+    - acme-staging.json
+    - acme.json
+  register: traefik_certs_databases

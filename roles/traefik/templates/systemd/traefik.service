@@ -1,0 +1,12 @@
+# Unit file for Traefik.
+# See: <https://github.com/containous/traefik/blob/master/contrib/systemd/traefik.service>
+[Unit]
+Description = Dynamic and microservices-friendly HTTP reverse proxy and load balancer
+After = network.target
+
+[Service]
+ExecStart = {{ prefix_dir }}/bin/traefik -c {{ prefix_dir }}/etc/traefik/traefik.toml
+Restart=on-failure
+
+[Install]
+WantedBy = multi-user.target

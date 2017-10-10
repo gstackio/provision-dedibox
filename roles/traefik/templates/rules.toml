@@ -1,0 +1,20 @@
+
+[frontends]
+
+  [frontends.front-gstack-production]
+  backend = "back-cf-production"
+  priority = 10
+  passHostHeader = true
+  entrypoints = [ "http", "https", "doppler" ]
+    [frontends.front-gstack-production.routes.wildcard-any-host]
+    # We actually don't need the "dummy" variable. We just implement a
+    # wildcard here. But Traefik forces us to use of a variable for
+    # this. (tested 2016-06-30)
+    rule = "HostRegexp: {dummy:[a-z0-9.-]+}"
+
+
+[backends]
+
+  [backends.back-cf-production]
+    [backends.back-cf-production.servers.server1]
+    url = "http://10.244.0.34:80"

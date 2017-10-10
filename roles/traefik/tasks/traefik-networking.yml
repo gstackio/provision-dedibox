@@ -1,0 +1,34 @@
+---
+
+- name: Traefik | external access to Traefik config endpoint is blocked by default
+  become: yes
+  iptables:
+    table: filter
+    action: insert
+    chain: INPUT
+    in_interface: em1
+    protocol: tcp
+    destination_port: 18080
+    # jump: REJECT # Kludge: the 'reject_with' already implies 'jump: REJECT'
+    reject_with: icmp-port-unreachable
+    comment: "Prevent external access to Traefik config endpoint by default"
+
+- name: Traefik | external traffic to Traefik config endpoint is enabled for specific sources
+  become: yes
+  iptables:
+    table: filter
+    action: insert
+    chain: INPUT
+    source: "{{ source.ip_addr }}"
+    in_interface: em1
+    protocol: tcp
+    destination_port: 18080
+    jump: ACCEPT
+    comment: "Allow external access from {{ source.name }} to Traefik config endpoint"
+  with_items:
+    # NOTE: reverse order here, because of 'action: insert'
+    - name: XIXe Freebox
+      ip_addr: 88.190.153.93
+    - name: Ad-hoc Granted IP (with 'allow-rpxy-access' script)
+      ip_addr: 88.190.153.93
+  loop_control: { loop_var: source }

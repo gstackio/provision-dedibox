@@ -1,0 +1,85 @@
+---
+
+- name: Traefik | directories are created
+  file:
+    path: "{{ prefix_dir }}/{{ item }}"
+    state: directory
+  with_items:
+    - bin
+    - var/log/traefik
+    - var/run
+
+
+
+- name: Traefik | binary is downloaded
+  get_url:
+    url: https://github.com/containous/traefik/releases/download/v{{ traefik_version }}/traefik_linux-amd64
+    sha256sum: "{{ traefik_sha256sum }}"
+    dest: "{{ prefix_dir }}/bin/traefik_v{{ traefik_version }}_linux-amd64"
+    mode: 0755
+  register: traefik_binary
+
+- name: Traefik | plain 'traefik' link to binary is made
+  file:
+    dest: "{{ prefix_dir }}/bin/traefik"
+    state: link
+    src: traefik_v{{ traefik_version }}_linux-amd64
+  register: traefik_link_to_binary
+
+- name: Traefik | utility script is installed
+  template:
+    src: bin/refresh-traefik-certs
+    dest: "{{ prefix_dir }}/bin/"
+    mode: 0755
+  tags: [ traefik-utility-script ]
+
+
+
+- name: Traefik | daemon management system is auto-discovered
+  shell: which systemd > /dev/null
+  register: systemd_install_probe
+  # Re-interpret output
+  # See also: <http://stackoverflow.com/a/30945268>
+  failed_when: systemd_install_probe.rc > 1
+  changed_when: no
+
+- name: Traefik | upstart config is set up (if necessary)
+  when: systemd_install_probe|failed
+  become: yes
+  template:
+    src: upstart/traefik.conf
+    dest: /etc/init/traefik.conf
+  register: traekif_upstart_conf
+
+- name: Traefik | systemd config is set up (if necessary)
+  when: systemd_install_probe|succeeded
+  become: yes
+  template:
+    src: systemd/traefik.service
+    dest: /etc/systemd/system/traefik.service
+  register: traekif_systemd_conf
+
+
+
+- name: Traefik | service is started
+  become: yes
+  service:
+    name: traefik
+    state: started
+  register: traefik_service_start
+
+- name: Traefik | service is restarted
+  when:
+    (    (traefik_server_conf     is defined  and  traefik_server_conf|changed)
+      or (traefik_default_certs   is defined  and  traefik_default_certs|changed)
+      or (traefik_certs_databases is defined  and  traefik_certs_databases|changed)
+      or (traefik_upstart_conf    is defined  and  traefik_upstart_conf|changed)
+      or (traefik_systemd_conf    is defined  and  traefik_systemd_conf|changed)
+      or traefik_binary|changed
+      or traefik_link_to_binary|changed
+    )
+    and not traefik_service_start|changed
+  become: yes
+  service:
+    name: traefik
+    state: restarted
