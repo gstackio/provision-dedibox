@@ -1,7 +1,7 @@
 ---
 
-traefik_version: "1.3.8"
-traefik_sha256sum: b3b052f8410dedaacf53f615039bfee67fb7c74f9d705d510dfbdcc6c546567c
+traefik_version: "1.0.3"
+traefik_sha256sum: 784ede42d839c6e40781f59ddb63f20332be083d2e1f9bbd9593cf4f35a7cc0e
 
 traefik_acme_enable: yes
 traefik_acme_certs_email: acme-certs@gstack.io

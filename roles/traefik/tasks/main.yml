@@ -1,10 +1,12 @@
 ---
 
-- include: traefik-networking.yml
-  tags: [ traefik ]
+# - include: traefik-networking.yml
+#   tags: [ traefik ]
 
 - include: traefik-config.yml
+  become: yes
   tags: [ traefik, traefik-config ]
 
 - include: traefik-daemon.yml
+  become: yes
   tags: [ traefik, traefik-daemon ]

@@ -5,7 +5,7 @@
   backend = "back-cf-production"
   priority = 10
   passHostHeader = true
-  entrypoints = [ "http", "https", "doppler" ]
+  entrypoints = [ "http", "https" ] # "doppler"
     [frontends.front-gstack-production.routes.wildcard-any-host]
     # We actually don't need the "dummy" variable. We just implement a
     # wildcard here. But Traefik forces us to use of a variable for

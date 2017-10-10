@@ -44,7 +44,7 @@
   changed_when: no
 
 - name: Traefik | upstart config is set up (if necessary)
-  when: systemd_install_probe|failed
+  when: systemd_install_probe.rc == 1
   become: yes
   template:
     src: upstart/traefik.conf
@@ -52,7 +52,7 @@
   register: traekif_upstart_conf
 
 - name: Traefik | systemd config is set up (if necessary)
-  when: systemd_install_probe|succeeded
+  when: systemd_install_probe.rc == 0
   become: yes
   template:
     src: systemd/traefik.service

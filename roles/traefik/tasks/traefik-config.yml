@@ -4,6 +4,7 @@
   file:
     path: "{{ prefix_dir }}/{{ item }}"
     state: directory
+    recurse: yes
     mode: 0700
   with_items:
     - etc/traefik
@@ -26,8 +27,8 @@
     dest: "{{ prefix_dir }}/etc/traefik/"
     mode: 0600
   with_items:
-    - traefik.gstack.io.crt
-    - traefik.gstack.io.key
+    - traefik-default.crt
+    - traefik-default.key
   register: traefik_default_certs
 
 - name: Traefik | initial certificates databases are copied (if non-existing)

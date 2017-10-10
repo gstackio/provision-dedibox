@@ -144,15 +144,6 @@ caServer = "https://acme-staging.api.letsencrypt.org/directory"
 #   main = "gstack.io"
 #   sans = [ "www.gstack.io", "get.gstack.io", "docs.gstack.io", "slack.gstack.io", "gaproxy.gstack.io" ]
 
-# A certificate with only the Gstack domain names for public services hosted on the CF platform
-[[acme.domains]]
-  main = "slack.gstack.io"
-  sans = [ "gaproxy.gstack.io" ]
-
-# A certificate with the domain names for internal Gstack services
-[[acme.domains]]
-  main = "monit.gstack.io"
-  sans = [ "ci.gstack.io", "monit.ci.gstack.io", "traefik.gstack.io", "backups.gstack.io" ]
 
 # Other example domains, related to the Gstack OpenShift Origin deployment
 #
@@ -204,14 +195,14 @@ caServer = "https://acme-staging.api.letsencrypt.org/directory"
   address = ":443"
     [entryPoints.https.tls]
       [[entryPoints.https.tls.certificates]]
-      CertFile = "{{ prefix_dir }}/etc/traefik/traefik.gstack.io.crt"
-      KeyFile = "{{ prefix_dir }}/etc/traefik/traefik.gstack.io.key"
-  [entryPoints.doppler]
-  address = ":4443"
-    [entryPoints.doppler.tls]
-      [[entryPoints.doppler.tls.certificates]]
-      CertFile = "{{ prefix_dir }}/etc/traefik/doppler.gstack.me.crt"
-      KeyFile = "{{ prefix_dir }}/etc/traefik/doppler.gstack.me.key"
+      CertFile = "{{ prefix_dir }}/etc/traefik/traefik-default.crt"
+      KeyFile = "{{ prefix_dir }}/etc/traefik/traefik-default.key"
+  # [entryPoints.doppler]
+  # address = ":4443"
+  #   [entryPoints.doppler.tls]
+  #     [[entryPoints.doppler.tls.certificates]]
+  #     CertFile = "{{ prefix_dir }}/etc/traefik/doppler.gstack.me.crt"
+  #     KeyFile = "{{ prefix_dir }}/etc/traefik/doppler.gstack.me.key"
 
 # Enable retry sending request if network error
 #
@@ -259,7 +250,7 @@ address = ":18080"
 #
 # Optional
 # ReadOnly = false
-ReadOnly = true
+ReadOnly = false
 
 
 ################################################################
