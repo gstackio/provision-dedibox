@@ -1,0 +1,11 @@
+---
+
+git_repos:
+  - name: gstack-bosh-environment
+    url: https://github.com/gstackio/gstack-bosh-environment.git
+  - name: bosh-deployment
+    url: https://github.com/cloudfoundry/bosh-deployment.git
+  - name: cf-deployment
+    url: https://github.com/cloudfoundry/cf-deployment.git
+  - name: cf-mysql-deployment
+    url: https://github.com/cloudfoundry/cf-mysql-deployment.git

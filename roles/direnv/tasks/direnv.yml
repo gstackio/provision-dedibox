@@ -1,0 +1,19 @@
+---
+
+- name: Direnv | direnv binary is downloaded
+  become: yes
+  get_url:
+    url: https://github.com/direnv/direnv/releases/download/v{{ direnv_version }}/direnv.linux-amd64
+    checksum: sha256:{{ direnv_sha256 }}
+    dest: "{{ prefix_dir }}/bin/direnv"
+    mode: 0755
+
+- name: Direnv | .bashrc skeleton (for future users) contains direnv hook setup
+  become: yes
+  blockinfile:
+    dest: /etc/skel/.bashrc
+    insertafter: EOF
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - direnv"
+    block: |
+      eval "$(direnv hook bash)"
+    state: present

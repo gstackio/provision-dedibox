@@ -1,0 +1,8 @@
+---
+
+- include: user-create.yml
+  with_items: "{{ trainees_list }}"
+  loop_control:
+    loop_var: user_info
+    label: "{{ user_info.login }}"
+  tags: [ users ]

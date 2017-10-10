@@ -1,0 +1,18 @@
+---
+
+- name: Git | the latest 'git' package is installed
+  become: yes
+  apt:
+    update_cache: yes
+    name: git
+    state: present
+  tags: [ git ]
+
+- name: Git | bash-completion apt packages are installed
+  become: yes
+  apt:
+    update_cache: yes
+    name: "{{ item }}"
+    state: present
+  with_items: [ bash-completion ]
+  tags: [ git ]

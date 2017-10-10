@@ -1,0 +1,12 @@
+---
+
+- name: Direnv | user .bashrc contains direnv hook setup
+  become: yes
+  become_user: "{{ user_info.login }}"
+  blockinfile:
+    dest: /home/{{ user_info.login }}/.bashrc
+    insertafter: EOF
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - direnv"
+    block: |
+      eval "$(direnv hook bash)"
+    state: present

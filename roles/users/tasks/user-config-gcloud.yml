@@ -1,0 +1,12 @@
+---
+
+- name: gcloud | user .profile contains $PATH customization
+  become: yes
+  become_user: "{{ user_info.login }}"
+  blockinfile:
+    dest: /home/{{ user_info.login }}/.profile
+    insertafter: EOF
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - gcloud"
+    block: |
+      export PATH={{ prefix_dir }}/google-cloud-sdk/bin:$PATH
+    state: present

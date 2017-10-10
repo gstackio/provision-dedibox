@@ -1,0 +1,27 @@
+---
+
+- hosts: dedibox
+  roles:
+    - direnv
+    - bosh2-cli
+    - unzip
+    - git
+    # - users
+  tasks:
+    - name: Utilities | packages are installed
+      become: true
+      apt:
+        name: "{{ package }}"
+        update_cache: yes
+        state: present
+      with_items:
+        # required for 'bbl' and 'bosh create-env' to work
+        - golang
+        - make
+        - ruby
+        # other nice utilities
+        - colordiff
+        - jq
+        - tree
+      loop_control: { loop_var: package }
+      tags: [ utilities ]

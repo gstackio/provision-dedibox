@@ -1,0 +1,32 @@
+---
+
+- debug:
+    msg: "user-create: user '{{ user_info.login }}' to be created"
+
+- name: user | user is created
+  become: yes
+  user:
+    name: "{{ user_info.login }}"
+    comment: "{{ user_info.full_name }}"
+    shell: /bin/bash
+    generate_ssh_key: yes
+    ssh_key_bits: 2048
+    ssh_key_file: .ssh/id_rsa
+
+- include: user-authorized-key.yml
+  tags: [ user-authorized-key ]
+
+- include: user-config-direnv.yml
+  tags: [ user-config-direnv ]
+
+- include: user-config-gcloud.yml
+  tags: [ user-config-gcloud ]
+
+- include: user-config-git.yml
+  tags: [ user-config-git ]
+
+- include: user-git-clones.yml
+  tags: [ user-git-clones ]
+
+- include: user-gcp-service-account.yml
+  tags: [ user-gcp-service-account ]

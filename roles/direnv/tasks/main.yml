@@ -1,0 +1,4 @@
+---
+
+- include: direnv.yml
+  tags: [ direnv ]

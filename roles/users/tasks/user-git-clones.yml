@@ -1,0 +1,12 @@
+---
+
+- name: Git | the Gstack BOSH Environment is cloned
+  become: yes
+  become_user: "{{ user_info.login }}"
+  git:
+    repo: "{{ git_repo.url }}"
+    dest: "/home/{{ user_info.login }}/{{ git_repo.name }}"
+  with_items: "{{ git_repos }}"
+  loop_control:
+    loop_var: git_repo
+    label: "{{ git_repo.name }}"

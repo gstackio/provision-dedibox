@@ -1,0 +1,13 @@
+---
+
+- name: SSH Authorized Keys | the generated key is added to .ssh/authorized_keys
+  become: yes
+  become_user: "{{ user_info.login }}"
+  lineinfile:
+    dest: "/home/{{ user_info.login }}/.ssh/authorized_keys"
+    create: yes
+    mode: 0600
+    insertafter: EOF
+    line: "{{ lookup('file', ssh_pub_key_file) }}"
+  vars:
+    ssh_pub_key_file: conf/trainees-keys/{{ user_info.login }}_id_rsa.pub

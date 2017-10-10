@@ -1,0 +1,9 @@
+---
+
+- name: Unzip | the latest 'unzip' package is installed
+  become: yes
+  apt:
+    update_cache: yes
+    name: unzip
+    state: present
+  tags: [ unzip ]

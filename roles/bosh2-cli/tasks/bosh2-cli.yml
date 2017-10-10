@@ -1,0 +1,16 @@
+---
+
+- name: BOSH v2 CLI | bosh2 binary is downloaded
+  become: yes
+  get_url:
+    url: https://s3.amazonaws.com/bosh-cli-artifacts/bosh-cli-{{ bosh2_cli_version }}-linux-amd64
+    checksum: sha256:{{ bosh2_cli_sha256 }}
+    dest: "{{ prefix_dir }}/bin/bosh2"
+    mode: 0755
+
+- name: BOSH v2 CLI | symbolic link to 'bosh2' named 'bosh' is created
+  become: yes
+  file:
+    path: "{{ prefix_dir }}/bin/bosh"
+    state: link
+    src: bosh2

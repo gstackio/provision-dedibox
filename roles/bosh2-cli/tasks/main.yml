@@ -1,0 +1,4 @@
+---
+
+- include: bosh2-cli.yml
+  tags: [ bosh2-cli ]
