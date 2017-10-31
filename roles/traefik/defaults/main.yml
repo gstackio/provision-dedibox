@@ -5,7 +5,7 @@ traefik_sha256sum: 784ede42d839c6e40781f59ddb63f20332be083d2e1f9bbd9593cf4f35a7c
 
 traefik_acme_enable: yes
 traefik_acme_certs_email: acme-certs@gstack.io
-traefik_acme_use_staging_api: yes
+traefik_acme_use_staging_api: no
 traefik_acme_overwrite_certs_dbs: no
 
 traefik_docker_enable: no
