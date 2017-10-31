@@ -9,6 +9,7 @@
     # - users
     - traefik
     - golang
+    - ruby
 
   tasks:
     - name: Utilities | packages are installed

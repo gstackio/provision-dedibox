@@ -1,0 +1,17 @@
+---
+
+- include: chruby.yml
+  become: yes
+  tags: [ ruby ]
+
+- include: ruby-build.yml
+  become: yes
+  tags: [ ruby ]
+
+- include: ruby.yml
+  become: yes
+  tags: [ ruby ]
+
+- include: bundler.yml
+  become: yes
+  tags: [ ruby ]
